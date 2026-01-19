@@ -16,8 +16,8 @@ with st.expander("Participant Information and Consent", expanded=True):
 
 agree = st.checkbox("I agree")
 
-if agree:
-    st.write("Great!")
+if agree:   
     if st.button("Go"):
-         st.switch_page("pages/GAAIS.py")
+        st.session_state["consent_ok"] = True
+        st.switch_page("pages/1_GAAIS.py")
 
