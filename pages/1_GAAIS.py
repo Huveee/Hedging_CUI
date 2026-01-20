@@ -10,8 +10,8 @@ if "gaais_ordered" not in st.session_state:
     st.session_state["gaais_ordered"] = random.sample(questions, len(questions))
 
 st.title("QUESTIONNAIRE 1")
-st.text("""Please rate how much you agree or disagree with each of the following statements. 
-There are no right or wrong answers. Please respond based on your personal opinions.""")
+st.markdown("""*Please rate how much you agree or disagree with each of the following statements. 
+There are no right or wrong answers. Please respond based on your personal opinions.*""")
 
 for question in st.session_state["gaais_ordered"]:
     st.radio(
@@ -21,7 +21,10 @@ for question in st.session_state["gaais_ordered"]:
         key=question["id"]) #save the answer in session state
 
 
+
 if st.button("Done"):
+    st.session_state["gaais_ok"] = True
+    st.switch_page("pages/2_Chat.py")
     missing_answers=False
     for question in st.session_state["gaais_ordered"]:
         if st.session_state.get(question["id"]) is None:
@@ -31,6 +34,7 @@ if st.button("Done"):
         st.warning("Please answer all questions before proceeding.")
     else:
         st.success("All answers recorded. Thank you!")
+        st.session_state["gaais_ok"] = True
         st.switch_page("pages/2_Chat.py")
 
 
