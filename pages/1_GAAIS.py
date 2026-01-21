@@ -19,6 +19,7 @@ for question in st.session_state["gaais_ordered"]:
         options=["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"],
         index=None, #No default answer selected
         key=question["id"]) #save the answer in session state
+    st.divider() #To add line between questions
 
 
 
