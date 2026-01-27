@@ -3,8 +3,14 @@
   "group": 1,
   "completed": false,
   "answers": {
-    "gaais_32": "Agree",
-    "gaais_24": "Neutral",
-    "gaais_15": "Strongly Agree"
+    "gaais_07": "Strongly Disagree",
+    "gaais_06": "Neutral",
+    "gaais_08": "Disagree",
+    "gaais_09": "Strongly Disagree",
+    "gaais_01": "Strongly Disagree",
+    "gaais_02": "Disagree",
+    "gaais_05": "Strongly Disagree",
+    "gaais_04": "Disagree",
+    "gaais_03": "Disagree"
   }
 }

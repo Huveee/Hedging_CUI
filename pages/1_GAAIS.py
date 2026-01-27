@@ -30,7 +30,15 @@ options = [
     "Strongly Agree"
 ]
 
-saved_value = st.session_state.get(question["id"], None)
+user_id = st.session_state["user_id"]
+file_answers = participant.load_answers(user_id)
+
+saved_value = st.session_state.get(question["id"])
+if saved_value is None:
+    saved_value = file_answers.get(question["id"])
+    # If the answer is in the file, save it in the session state
+    if saved_value is not None:
+        st.session_state[question["id"]] = saved_value
 
 st.radio(
     question["text"], #show the question text
@@ -38,13 +46,14 @@ st.radio(
     index=options.index(saved_value) if saved_value in options else None,
     key=question["id"]) #save the answer in session state
 
-user_id = st.session_state["user_id"]
 
 col1, col2, col3 = st.columns([1, 4, 1])
 
 with col1:
     if st.session_state.step > 0:
         if st.button("⬅ Back"):
+            answer=st.session_state[question["id"]]
+            participant.save_answer(user_id, question["id"], answer)
             st.session_state.step -= 1
             st.rerun()
 
@@ -57,16 +66,18 @@ with col3:
             st.rerun()
     else:
         if st.button("Finish"):
+            answer=st.session_state[question["id"]]
+            participant.save_answer(user_id, question["id"], answer)
             missing_answers=False
-            for question in st.session_state["gaais_random"]:
-                if st.session_state.get(question["id"]) is None:
+            answers = participant.load_answers(user_id)  # zaten answers dict
+            for answer in answers.values():
+                if answer is None:
                     missing_answers=True
                     break
             if missing_answers:
                 st.warning("Please answer all questions before proceeding.")
             else:
-                answer=st.session_state[question["id"]]
-                participant.save_answer(user_id, question["id"], answer)
+
                 st.success("All answers recorded. Thank you!")
                 st.switch_page("pages/2_Chat.py")
 

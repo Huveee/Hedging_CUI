@@ -5,8 +5,6 @@ import utils.sidebar as sidebar
 sidebar.hide_sidebar()
 
 
-
-
 #State Initialization (To save the chat messages and final decision in case of rerunning the app)
 # 1) Chat message history
 if "chat_messages" not in st.session_state:
