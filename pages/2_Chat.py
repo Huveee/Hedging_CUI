@@ -1,11 +1,10 @@
 import streamlit as st
 import time
+import utils.sidebar as sidebar
 
-consent_done = st.session_state.get("consent_ok")
-gaais_done = st.session_state.get("gaais_ok")
+sidebar.hide_sidebar()
 
-if not consent_done or not gaais_done:
-    st.switch_page("pages/1_GAAIS.py")
+
 
 
 #State Initialization (To save the chat messages and final decision in case of rerunning the app)
@@ -89,7 +88,6 @@ if st.button("Next"):
         st.stop()
 
     # 3) If everything is done, switch to the next page
-    st.session_state["chat_ok"] = True
     st.switch_page("pages/3_Questionnaire.py")
 
 

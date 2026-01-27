@@ -1,5 +1,7 @@
 import streamlit as st
 import utils.sidebar as sidebar
+import utils.participant as participant
+
 
 #To hide the sidebar with the function we created
 sidebar.hide_sidebar()
@@ -20,7 +22,9 @@ No personal identifying information will be collected. Your responses will be
 stored anonymously using a random participant ID and used only for research purposes.
 """)
 
+participant.init_participant()
 agree = st.checkbox("I agree")
+
 
 if agree:   
     if st.button("Go"):

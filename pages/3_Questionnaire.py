@@ -1,12 +1,9 @@
 import streamlit as st
 from data.questions_hct import questions_hct
+import utils.sidebar as sidebar
 
-consent_done = st.session_state.get("consent_ok")
-gaais_done = st.session_state.get("gaais_ok")
-chat_done = st.session_state.get("chat_ok")
+sidebar.hide_sidebar()
 
-if not consent_done or not gaais_done or not chat_done:
-    st.switch_page("pages/2_Chat.py")
 
 st.title("Questionnaire") #title of the page
 
@@ -45,7 +42,6 @@ if st.button("Done"):
         st.warning("Please answer all questions before proceeding.")
     else:
         st.success("All answers recorded. Thank you!")
-        st.session_state["questionnaire_ok"] = True
         st.switch_page("pages/4_Thanks.py")
 
 
