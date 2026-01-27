@@ -53,7 +53,8 @@ def init_participant():
         data = {
             "user_id": user_id,
             "group": assigned_group,
-            "completed": False #For checking if the participant has completed the study
+            "completed": False, #For checking if the participant has completed the study
+            "answers": {}      # For saving the participant's answers
         }
 
         # Save the file
@@ -66,3 +67,19 @@ def init_participant():
     st.session_state["group"] = data["group"]
     # Save the user ID in Streamlit session state
     st.session_state["user_id"] = user_id
+
+
+def save_answer(user_id: str, question_id: str, answer):
+    path = f"participants/{user_id}.json"
+
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)  # Load the file
+
+    if "answers" not in data or not isinstance(data["answers"], dict):
+        data["answers"] = {}  # Initialize the answers dictionary if it doesn't exist
+
+    data["answers"][question_id] = answer
+
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)  # Save the file
+

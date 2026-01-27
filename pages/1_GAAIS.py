@@ -2,6 +2,7 @@ import streamlit as st
 from data.questions_gaais import questions
 import random
 import utils.sidebar as sidebar
+import utils.participant as participant
 
 sidebar.hide_sidebar()
 
@@ -37,6 +38,7 @@ st.radio(
     index=options.index(saved_value) if saved_value in options else None,
     key=question["id"]) #save the answer in session state
 
+user_id = st.session_state["user_id"]
 
 col1, col2, col3 = st.columns([1, 4, 1])
 
@@ -49,6 +51,8 @@ with col1:
 with col3:
     if st.session_state.step < len(questions) - 1:
         if st.button("Next ➡"):
+            answer=st.session_state[question["id"]]
+            participant.save_answer(user_id, question["id"], answer)
             st.session_state.step += 1
             st.rerun()
     else:
@@ -61,6 +65,8 @@ with col3:
             if missing_answers:
                 st.warning("Please answer all questions before proceeding.")
             else:
+                answer=st.session_state[question["id"]]
+                participant.save_answer(user_id, question["id"], answer)
                 st.success("All answers recorded. Thank you!")
                 st.switch_page("pages/2_Chat.py")
 
