@@ -54,7 +54,8 @@ def init_participant():
             "user_id": user_id,
             "group": assigned_group,
             "completed": False, #For checking if the participant has completed the study
-            "answers": {}      # For saving the participant's answers
+            "answers": {},      # For saving the participant's answers
+            "decision": None    # For saving the participant's decision
         }
 
         # Save the file
@@ -90,5 +91,18 @@ def load_answers(user_id: str) -> dict:
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
     return data.get("answers", {})
+
+
+def save_field(user_id: str, field: str, value):
+    path = f"participants/{user_id}.json"
+
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    data[field] = value
+
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
 
 

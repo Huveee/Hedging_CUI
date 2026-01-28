@@ -1,6 +1,7 @@
 import streamlit as st
 import time
 import utils.sidebar as sidebar
+import utils.participant as participant
 
 sidebar.hide_sidebar()
 
@@ -41,6 +42,7 @@ st.markdown("### Decision question")
 st.markdown("**Should you invest in this option?**")
 
 st.subheader("Chat")
+st.write("Your group is: ", st.session_state["group"])
 chat_box=st.container()
 
 with chat_box:
@@ -85,7 +87,14 @@ if st.button("Next"):
         st.error("Please make your final decision before continuing.")
         st.stop()
 
-    # 3) If everything is done, switch to the next page
+    # 3) Save the decision to the user file
+    participant.save_field(
+        st.session_state["user_id"],
+        "decision",
+        st.session_state["final_decision"]
+    )
+
+    # 4) If everything is done, switch to the next page
     st.switch_page("pages/3_Questionnaire.py")
 
 
