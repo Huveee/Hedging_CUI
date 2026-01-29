@@ -1,24 +1,26 @@
 import streamlit as st
 from data.questions_hct import questions_hct
 import utils.sidebar as sidebar
+import utils.participant as participant
 
 sidebar.hide_sidebar()
 
 
 st.title("Questionnaire") #title of the page
 
-
-confidence = st.slider(
+confidence = st.radio(
     "How confident did the chatbot seem?",
-    min_value=1,
-    max_value=10,
+    options=list(range(1,11)),
+    horizontal=True,
+    index=None,
     key="q_confidence"
 )
 
-correctness = st.slider(
+correctness = st.radio(
     "How likely is the chatbot to be correct?",
-    min_value=1,
-    max_value=10,
+    options=list(range(1,11)),
+    horizontal=True,
+    index=None,
     key="q_correctness"
 )
 
@@ -31,11 +33,13 @@ for question in questions_hct:
     )
     st.divider() #To add line between questions
 
+user_id = st.session_state["user_id"]
 
 if st.button("Done"):
     missing_answers=False
-    for question in questions_hct:
-        if st.session_state.get(question["id"]) is None:
+    answers = participant.load_answers(user_id,answers_key="answers_hct")  # Load the answers from the file
+    for answer in answers.values():
+        if answer is None:
             missing_answers=True
             break
     if missing_answers:

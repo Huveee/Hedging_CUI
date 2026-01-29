@@ -31,7 +31,7 @@ options = [
 ]
 
 user_id = st.session_state["user_id"]
-file_answers = participant.load_answers(user_id)
+file_answers = participant.load_answers(user_id,answers_key="answers_gaais")
 
 saved_value = st.session_state.get(question["id"])
 if saved_value is None:
@@ -53,7 +53,7 @@ with col1:
     if st.session_state.step > 0:
         if st.button("⬅ Back"):
             answer=st.session_state[question["id"]]
-            participant.save_answer(user_id, question["id"], answer)
+            participant.save_answer(user_id, question["id"], answer,answers_key="answers_gaais")
             st.session_state.step -= 1
             st.rerun()
 
@@ -61,15 +61,15 @@ with col3:
     if st.session_state.step < len(questions) - 1:
         if st.button("Next ➡"):
             answer=st.session_state[question["id"]]
-            participant.save_answer(user_id, question["id"], answer)
+            participant.save_answer(user_id, question["id"], answer,answers_key="answers_gaais")
             st.session_state.step += 1
             st.rerun()
     else:
         if st.button("Finish"):
             answer=st.session_state[question["id"]]
-            participant.save_answer(user_id, question["id"], answer)
+            participant.save_answer(user_id, question["id"], answer,answers_key="answers_gaais")
             missing_answers=False
-            answers = participant.load_answers(user_id)  # zaten answers dict
+            answers = participant.load_answers(user_id,answers_key="answers_gaais")  # zaten answers dict
             for answer in answers.values():
                 if answer is None:
                     missing_answers=True

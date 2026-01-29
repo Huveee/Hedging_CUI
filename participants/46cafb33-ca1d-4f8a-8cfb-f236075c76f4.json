@@ -2,12 +2,13 @@
   "user_id": "46cafb33-ca1d-4f8a-8cfb-f236075c76f4",
   "group": 1,
   "completed": false,
-  "answers": {
+  "answers_gaais": {
     "gaais_01": "Strongly Disagree",
-    "gaais_02": "Disagree",
-    "gaais_03": "Strongly Disagree",
-    "gaais_04": "Strongly Disagree",
+    "gaais_03": "Neutral",
+    "gaais_02": "Agree",
+    "gaais_04": "Strongly Agree",
     "gaais_05": "Disagree"
   },
-  "decision": "Yes"
+  "decision": "No",
+  "answers_hct": {}
 }

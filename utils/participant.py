@@ -54,8 +54,9 @@ def init_participant():
             "user_id": user_id,
             "group": assigned_group,
             "completed": False, #For checking if the participant has completed the study
-            "answers": {},      # For saving the participant's answers
-            "decision": None    # For saving the participant's decision
+            "answers_gaais": {},      # For saving the participant's answers
+            "decision": None,  # For saving the participant's decision
+            "answers_hct":{}   # For saving the participant's questionnaire answers
         }
 
         # Save the file
@@ -70,27 +71,36 @@ def init_participant():
     st.session_state["user_id"] = user_id
 
 
-def save_answer(user_id: str, question_id: str, answer):
+def save_answer(user_id: str, question_id: str, answer, answers_key: str = "answers"):
     path = f"participants/{user_id}.json"
 
-    with open(path, "r", encoding="utf-8") as f:
-        data = json.load(f)  # Load the file
-
-    if "answers" not in data or not isinstance(data["answers"], dict):
-        data["answers"] = {}  # Initialize the answers dictionary if it doesn't exist
-
-    data["answers"][question_id] = answer
-
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)  # Save the file
-
-
-
-def load_answers(user_id: str) -> dict:
-    path = f"participants/{user_id}.json"
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
-    return data.get("answers", {})
+
+    if answers_key not in data or not isinstance(data[answers_key], dict):
+        data[answers_key] = {}
+
+    data[answers_key][question_id] = answer
+
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+
+
+
+def load_answers(user_id: str, answers_key: str = "answers") -> dict:
+    path = f"participants/{user_id}.json"
+
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    # Get the answers from the file
+    answers = data.get(answers_key, {})
+    if isinstance(answers, dict):
+        return answers
+    else:
+        return {}
+
 
 
 def save_field(user_id: str, field: str, value):
