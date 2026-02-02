@@ -8,6 +8,7 @@ sidebar.hide_sidebar()
 
 
 st.title("HELLO")
+st.write("")
 st.subheader("Participant Information and Consent")
 st.markdown("""
 You are invited to participate in an online research study on decision-making

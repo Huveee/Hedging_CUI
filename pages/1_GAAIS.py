@@ -12,9 +12,11 @@ if "gaais_random" not in st.session_state:
     st.session_state["gaais_random"] = random.sample(questions, len(questions))
 
 st.title("QUESTIONNAIRE 1")
+st.write("")
 st.markdown("""*Please rate how much you agree or disagree with each of the following statements. 
 There are no right or wrong answers. Please respond based on your personal opinions.*""")
-
+st.write("")
+st.write("")
 
 ordered_questions = st.session_state["gaais_random"]
 
