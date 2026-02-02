@@ -36,6 +36,43 @@ for question in questions_hct:
 user_id = st.session_state["user_id"]
 
 if st.button("Done"):
+    missing = []
+
+    # 1) Confidence + correctness kontrol + kaydet
+    conf = st.session_state.get("q_confidence")
+    corr = st.session_state.get("q_correctness")
+
+    if conf is None:
+        missing.append("q_confidence")
+    else:
+        participant.save_answer(user_id, "q_confidence", conf, answers_key="answers_hct")
+
+    if corr is None:
+        missing.append("q_correctness")
+    else:
+        participant.save_answer(user_id, "q_correctness", corr, answers_key="answers_hct")
+
+    # 2) HCT sorularını kontrol + kaydet
+    for q in questions_hct:
+        val = st.session_state.get(q["id"])
+        if val is None:
+            missing.append(q["id"])
+        else:
+            participant.save_answer(user_id, q["id"], val, answers_key="answers_hct")
+
+    # 3) Eksik varsa uyar
+    if missing:
+        st.warning("Please answer all questions before proceeding.")
+        # debug istersen:
+        # st.write("Missing:", missing)
+        st.stop()
+
+    st.success("All answers recorded. Thank you!")
+    st.switch_page("pages/4_Thanks.py")
+
+
+
+if st.button("Done"):
     missing_answers=False
     answers = participant.load_answers(user_id,answers_key="answers_hct")  # Load the answers from the file
     for answer in answers.values():
