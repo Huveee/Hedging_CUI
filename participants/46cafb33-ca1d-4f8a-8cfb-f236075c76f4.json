@@ -4,11 +4,11 @@
   "completed": false,
   "answers_gaais": {
     "gaais_01": "Strongly Disagree",
-    "gaais_03": "Neutral",
-    "gaais_02": "Agree",
-    "gaais_04": "Strongly Agree",
-    "gaais_05": "Disagree"
+    "gaais_02": "Strongly Disagree",
+    "gaais_03": "Strongly Disagree",
+    "gaais_04": "Strongly Disagree",
+    "gaais_05": "Strongly Disagree"
   },
-  "decision": "No",
+  "decision": null,
   "answers_hct": {}
 }
