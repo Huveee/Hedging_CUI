@@ -3,10 +3,11 @@ import streamlit as st
 from data.questions_gaais import questions
 import random
 import utils.sidebar as sidebar
-import utils.participant as participant
+import utils.database as db
+
 
 sidebar.hide_sidebar()
-
+db.init_db()
 
 # Random order of the questions at first 
 if "gaais_random" not in st.session_state:
@@ -53,15 +54,18 @@ if st.button("Done",key="done_button1"):
     if missing:
         st.warning("Please answer all questions before proceeding.")
     else:
+        db.create_participant_if_missing(
+            user_id=user_id,
+            group_no=int(st.session_state["group"]),
+        )
         # Save all answers
         for question in questions:
-            participant.save_answer(
-                user_id,
-                question["id"],
-                st.session_state[question["id"]],
-                answers_key="answers_gaais",
+            db.upsert_answer(
+                user_id=user_id,
+                survey="gaais",
+                question_id=question["id"],
+                answer=st.session_state[question["id"]],
             )
-
         st.success("All answers recorded. Thank you!")
         st.switch_page("pages/2_Chat.py")  # switch to the next page
 

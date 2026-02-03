@@ -1,11 +1,11 @@
 import streamlit as st
 import utils.sidebar as sidebar
-import utils.participant as participant
-
+import uuid
+import utils.database as db
 
 #To hide the sidebar with the function we created
 sidebar.hide_sidebar()
-
+db.init_db()
 
 st.title("HELLO")
 st.write("")
@@ -23,11 +23,31 @@ No personal identifying information will be collected. Your responses will be
 stored anonymously using a random participant ID and used only for research purposes.
 """)
 
-participant.init_participant()
+# Ensure user_id exists in session (one per browser session)
+if "user_id" not in st.session_state:
+    st.session_state["user_id"] = str(uuid.uuid4())
+
+# If user already completed, block (same browser shouldn't complete twice)
+if db.is_completed(st.session_state["user_id"]):
+    st.error("You have already completed this study in this browser.")
+    st.stop()
+
+# Assign group if missing (0/1/2)
+if "group" not in st.session_state:
+    # simple random assignment
+    st.session_state["group"] = uuid.uuid4().int % 3
+
+st.write("")
+
 agree = st.checkbox("I agree")
 
 
 if agree:   
     if st.button("Go"):
+        # Create participant row in DB
+        db.create_participant_if_missing(
+            user_id=st.session_state["user_id"],
+            group_no=int(st.session_state["group"])
+        )
         st.switch_page("pages/1_GAAIS.py")
 

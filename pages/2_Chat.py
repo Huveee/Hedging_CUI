@@ -1,7 +1,7 @@
 import streamlit as st
 import time
 import utils.sidebar as sidebar
-import utils.participant as participant
+import utils.database as db
 from data.scenarios import DECISION_SCENARIO, DECISION_QUESTION
 
 
@@ -13,6 +13,7 @@ OLLAMA_MODEL = "llama3.2:1b"
 
 
 sidebar.hide_sidebar()
+db.init_db()
 
 
 #State Initialization (To save the chat messages and final decision in case of rerunning the app)
@@ -139,8 +140,6 @@ def send_message():
 
 
 
-
-
 st.text_input("Type your message here:", key="user_input")
 st.button("Send", on_click=send_message)
 
@@ -166,11 +165,16 @@ if st.button("Next"):
         st.error("Please make your final decision before continuing.")
         st.stop()
 
-    # 3) Save the decision to the user file
-    participant.save_field(
-        st.session_state["user_id"],
-        "decision",
-        st.session_state["final_decision"]
+    # DB: make sure participant row exists 
+    db.create_participant_if_missing(
+        user_id=st.session_state["user_id"],
+        group_no=int(st.session_state["group"])
+    )
+
+    # DB: save decision
+    db.set_decision(
+        user_id=st.session_state["user_id"],
+        decision=st.session_state["final_decision"]
     )
 
     # 4) If everything is done, switch to the next page

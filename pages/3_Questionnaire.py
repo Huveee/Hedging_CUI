@@ -2,12 +2,14 @@ from pandas.core.ops.docstrings import key
 import streamlit as st
 from data.questions_hct import questions_hct
 import utils.sidebar as sidebar
-import utils.participant as participant
+import utils.database as db
 
 sidebar.hide_sidebar()
-
+db.init_db()
 
 st.title("Questionnaire") #title of the page
+st.write("")
+
 
 confidence = st.radio(
     "How confident did the chatbot seem?",
@@ -47,12 +49,12 @@ if st.button("Done",key="done_button2"):
     if conf is None:
         missing.append("chatbot_confidence")
     else:
-        participant.save_answer(user_id, "chatbot_confidence", conf, answers_key="answers_hct")
+        db.upsert_answer(user_id, "hct", "chatbot_confidence", conf)
 
     if corr is None:
         missing.append("chatbot_correctness")
     else:
-        participant.save_answer(user_id, "chatbot_correctness", corr, answers_key="answers_hct")
+        db.upsert_answer(user_id, "hct", "chatbot_correctness", corr)
 
     # 2) Check if the HCT questions are answered
     for q in questions_hct:
@@ -60,7 +62,7 @@ if st.button("Done",key="done_button2"):
         if val is None:
             missing.append(q["id"])
         else:
-            participant.save_answer(user_id, q["id"], val, answers_key="answers_hct")
+            db.upsert_answer(user_id, "hct", q["id"], val)
 
     # 3) Eksik varsa uyar
     if missing:
@@ -69,7 +71,7 @@ if st.button("Done",key="done_button2"):
         # st.write("Missing:", missing)
         st.stop()
 
-    st.success("All answers recorded. Thank you!")
+    db.mark_completed(user_id, True)
     st.switch_page("pages/4_Thanks.py")
 
 
