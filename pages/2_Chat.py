@@ -2,6 +2,8 @@ import streamlit as st
 import time
 import utils.sidebar as sidebar
 import utils.participant as participant
+from data.scenarios import DECISION_SCENARIO, DECISION_QUESTION
+
 
 import requests  # For Ollama API calls
 import json
@@ -31,22 +33,16 @@ if "decision_submitted" not in st.session_state:
     st.session_state["decision_submitted"] = False
 
 st.title("Decision Task")
+st.write("")
 
 st.markdown("""*Please read the following scenario carefully.  
 After reading it, you can ask the assistant questions and then make your final decision.*""")
+st.write("")
 
-st.info("""**Imagine the following situation:**
-
-You have €1,000 that you do not urgently need. A friend tells you about an investment opportunity in a new technology company.
-
-If the company performs well, you could gain around 20% of your investment.
-If it performs poorly, you could lose part of it.
-
-You are unsure whether this is a good idea, so you may ask the assistant for advice before making your decision.""")
-
+st.info(f"***Imagine the following situation:***\n\n{DECISION_SCENARIO}")
 
 st.markdown("### Decision question")
-st.markdown("**Should you invest in this option?**")
+st.markdown(f"**{DECISION_QUESTION}**")
 
 st.subheader("Chat")
 st.write("Your group is: ", st.session_state["group"])
@@ -60,6 +56,28 @@ with chat_box:
             st.markdown(f"**Assistant:** {msg['content']}")
 
 
+
+# Assign system prompt for different groups
+def system_prompt_for_group(group: int) -> str: 
+    if group == 0:
+        return (
+            "You are a helpful assistant. Answer clearly and briefly. "
+            "Give practical pros/cons and a balanced recommendation."
+        )
+    if group == 1:
+        return (
+            "You are a cautious assistant. Avoid overconfidence. "
+            "If information is missing, say so. Use hedging when appropriate "
+            "(e.g., 'it depends', 'might', 'uncertain'). Provide pros/cons."
+        )
+    if group == 2:
+        return (
+            "You are a Socratic assistant. Ask 1-3 clarifying questions first "
+            "before giving advice. Then provide pros/cons and a recommendation."
+        )
+    return "You are a helpful assistant."
+
+
 def send_message():
     text = st.session_state["user_input"].strip()
     if not text:
@@ -71,13 +89,23 @@ def send_message():
     )
     st.session_state["user_input"] = ""
 
-    # ollama mesajlarını hazırla
+    group = int(st.session_state.get("group", 0))
+
     messages = [
         {
             "role": "system",
-            "content": "You are a helpful assistant. Answer clearly and briefly."
-        }
+            "content": system_prompt_for_group(group) 
+        },
+        # {
+        #     "role": "system",
+        #     "content": f"SCENARIO CONTEXT:\n{DECISION_SCENARIO}"
+        # },
+        # {
+        #     "role": "system",
+        #     "content": f"DECISION QUESTION:\n{DECISION_QUESTION}"
+        # }
     ]
+
 
     for m in st.session_state["chat_messages"]:
         messages.append(
@@ -108,6 +136,8 @@ def send_message():
     st.session_state["chat_messages"].append(
         {"role": "assistant", "content": assistant_reply}
     )
+
+
 
 
 

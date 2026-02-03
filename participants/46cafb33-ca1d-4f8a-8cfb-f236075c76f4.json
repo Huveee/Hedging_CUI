@@ -3,17 +3,17 @@
   "group": 1,
   "completed": false,
   "answers_gaais": {
-    "gaais_01": "Strongly Disagree",
-    "gaais_02": "Strongly Disagree",
-    "gaais_03": "Strongly Disagree",
+    "gaais_01": "Disagree",
+    "gaais_02": "Disagree",
+    "gaais_03": "Disagree",
     "gaais_04": "Strongly Disagree",
     "gaais_05": "Strongly Disagree"
   },
-  "decision": "No",
+  "decision": "Yes",
   "answers_hct": {
-    "q_confidence": 3,
-    "hct_01": "Strongly Agree",
-    "hct_02": "Neutral",
-    "q_correctness": 2
+    "chatbot_confidence": 2,
+    "hct_01": "Neutral",
+    "hct_02": "Strongly Disagree",
+    "chatbot_correctness": 8
   }
 }
