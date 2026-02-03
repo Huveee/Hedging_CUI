@@ -6,7 +6,7 @@ from streamlit_cookies_manager import EncryptedCookieManager
 
 cookies = EncryptedCookieManager(
     prefix="study_",
-    password="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    password="XXXXXXXXXXXXXXXXXXXX"
 )
 
 if not cookies.ready():
@@ -29,7 +29,7 @@ st.session_state["user_id"] = cookies["user_id"]
 if db.is_completed(st.session_state["user_id"]):
     st.error("You have already completed this study in this browser.")
     st.stop()
-    
+
 
 st.title("HELLO")
 st.write("")
