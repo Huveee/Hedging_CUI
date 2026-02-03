@@ -2,10 +2,34 @@ import streamlit as st
 import utils.sidebar as sidebar
 import uuid
 import utils.database as db
+from streamlit_cookies_manager import EncryptedCookieManager
+
+cookies = EncryptedCookieManager(
+    prefix="study_",
+    password="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+)
+
+if not cookies.ready():
+    st.stop()
+
 
 #To hide the sidebar with the function we created
 sidebar.hide_sidebar()
 db.init_db()
+
+
+# If user_id doesn't exist in cookies, create it
+if "user_id" not in cookies:
+    cookies["user_id"] = str(uuid.uuid4())
+    cookies.save()
+
+st.session_state["user_id"] = cookies["user_id"]
+
+# If user already completed, block (same browser shouldn't complete twice)
+if db.is_completed(st.session_state["user_id"]):
+    st.error("You have already completed this study in this browser.")
+    st.stop()
+    
 
 st.title("HELLO")
 st.write("")
@@ -23,14 +47,7 @@ No personal identifying information will be collected. Your responses will be
 stored anonymously using a random participant ID and used only for research purposes.
 """)
 
-# Ensure user_id exists in session (one per browser session)
-if "user_id" not in st.session_state:
-    st.session_state["user_id"] = str(uuid.uuid4())
 
-# If user already completed, block (same browser shouldn't complete twice)
-if db.is_completed(st.session_state["user_id"]):
-    st.error("You have already completed this study in this browser.")
-    st.stop()
 
 # Assign group if missing (0/1/2)
 if "group" not in st.session_state:
