@@ -1,3 +1,4 @@
+from pandas.core.ops.docstrings import key
 import streamlit as st
 from data.questions_gaais import questions
 import random
@@ -45,7 +46,7 @@ for question in ordered_questions:
 
 
 # Tek buton: Done
-if st.button("Done"):
+if st.button("Done",key="done_button1"):
     # Check if all questions are answered
     missing = [q["id"] for q in questions if st.session_state.get(q["id"]) is None]
 

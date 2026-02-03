@@ -1,3 +1,4 @@
+from pandas.core.ops.docstrings import key
 import streamlit as st
 from data.questions_hct import questions_hct
 import utils.sidebar as sidebar
@@ -13,7 +14,7 @@ confidence = st.radio(
     options=list(range(1,11)),
     horizontal=True,
     index=None,
-    key="q_confidence"
+    key="chatbot_confidence"
 )
 
 correctness = st.radio(
@@ -21,7 +22,7 @@ correctness = st.radio(
     options=list(range(1,11)),
     horizontal=True,
     index=None,
-    key="q_correctness"
+    key="chatbot_correctness"
 )
 
 for question in questions_hct:
@@ -35,24 +36,25 @@ for question in questions_hct:
 
 user_id = st.session_state["user_id"]
 
-if st.button("Done"):
+
+if st.button("Done",key="done_button2"):
     missing = []
 
-    # 1) Confidence + correctness kontrol + kaydet
-    conf = st.session_state.get("q_confidence")
-    corr = st.session_state.get("q_correctness")
+    # 1) Check if the confidence and correctness questions are answered
+    conf = st.session_state.get("chatbot_confidence")
+    corr = st.session_state.get("chatbot_correctness")
 
     if conf is None:
-        missing.append("q_confidence")
+        missing.append("chatbot_confidence")
     else:
-        participant.save_answer(user_id, "q_confidence", conf, answers_key="answers_hct")
+        participant.save_answer(user_id, "chatbot_confidence", conf, answers_key="answers_hct")
 
     if corr is None:
-        missing.append("q_correctness")
+        missing.append("chatbot_correctness")
     else:
-        participant.save_answer(user_id, "q_correctness", corr, answers_key="answers_hct")
+        participant.save_answer(user_id, "chatbot_correctness", corr, answers_key="answers_hct")
 
-    # 2) HCT sorularını kontrol + kaydet
+    # 2) Check if the HCT questions are answered
     for q in questions_hct:
         val = st.session_state.get(q["id"])
         if val is None:
@@ -70,20 +72,6 @@ if st.button("Done"):
     st.success("All answers recorded. Thank you!")
     st.switch_page("pages/4_Thanks.py")
 
-
-
-if st.button("Done"):
-    missing_answers=False
-    answers = participant.load_answers(user_id,answers_key="answers_hct")  # Load the answers from the file
-    for answer in answers.values():
-        if answer is None:
-            missing_answers=True
-            break
-    if missing_answers:
-        st.warning("Please answer all questions before proceeding.")
-    else:
-        st.success("All answers recorded. Thank you!")
-        st.switch_page("pages/4_Thanks.py")
 
 
 

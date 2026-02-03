@@ -3,6 +3,13 @@ import time
 import utils.sidebar as sidebar
 import utils.participant as participant
 
+import requests  # For Ollama API calls
+import json
+
+OLLAMA_URL = "http://localhost:11434"
+OLLAMA_MODEL = "llama3.2:1b"
+
+
 sidebar.hide_sidebar()
 
 
@@ -57,9 +64,51 @@ def send_message():
     text = st.session_state["user_input"].strip()
     if not text:
         return
-    st.session_state["chat_messages"].append({"role": "user", "content": text})
-    st.session_state["chat_messages"].append({"role": "assistant", "content": "Reply??..."})
+
+    # user mesajı
+    st.session_state["chat_messages"].append(
+        {"role": "user", "content": text}
+    )
     st.session_state["user_input"] = ""
+
+    # ollama mesajlarını hazırla
+    messages = [
+        {
+            "role": "system",
+            "content": "You are a helpful assistant. Answer clearly and briefly."
+        }
+    ]
+
+    for m in st.session_state["chat_messages"]:
+        messages.append(
+            {"role": m["role"], "content": m["content"]}
+        )
+
+    payload = {
+        "model": OLLAMA_MODEL,
+        "messages": messages,
+        "stream": False
+    }
+
+    try:
+        r = requests.post(
+            f"{OLLAMA_URL}/api/chat",
+            json=payload,
+            timeout=60
+        )
+        r.raise_for_status()
+        data = r.json()
+
+        assistant_reply = data["message"]["content"]
+
+    except Exception as e:
+        assistant_reply = f"(Ollama error: {e})"
+
+    # assistant cevabı
+    st.session_state["chat_messages"].append(
+        {"role": "assistant", "content": assistant_reply}
+    )
+
 
 
 st.text_input("Type your message here:", key="user_input")

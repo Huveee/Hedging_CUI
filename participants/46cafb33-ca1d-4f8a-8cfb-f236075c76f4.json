@@ -9,6 +9,11 @@
     "gaais_04": "Strongly Disagree",
     "gaais_05": "Strongly Disagree"
   },
-  "decision": null,
-  "answers_hct": {}
+  "decision": "No",
+  "answers_hct": {
+    "q_confidence": 3,
+    "hct_01": "Strongly Agree",
+    "hct_02": "Neutral",
+    "q_correctness": 2
+  }
 }
