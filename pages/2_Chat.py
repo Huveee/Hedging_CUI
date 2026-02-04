@@ -2,6 +2,7 @@ import streamlit as st
 import time
 import utils.sidebar as sidebar
 import utils.database as db
+import utils.auth_helper as auth
 from data.scenarios import DECISION_SCENARIO, DECISION_QUESTION
 
 
@@ -14,6 +15,7 @@ OLLAMA_MODEL = "llama3.2:1b"
 
 sidebar.hide_sidebar()
 db.init_db()
+user_id = auth.require_user_id()
 
 
 #State Initialization (To save the chat messages and final decision in case of rerunning the app)
@@ -167,13 +169,13 @@ if st.button("Next"):
 
     # DB: make sure participant row exists 
     db.create_participant_if_missing(
-        user_id=st.session_state["user_id"],
+        user_id=user_id,
         group_no=int(st.session_state["group"])
     )
 
     # DB: save decision
     db.set_decision(
-        user_id=st.session_state["user_id"],
+        user_id=user_id,
         decision=st.session_state["final_decision"]
     )
 

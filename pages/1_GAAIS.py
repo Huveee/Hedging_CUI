@@ -4,6 +4,7 @@ from data.questions_gaais import questions
 import random
 import utils.sidebar as sidebar
 import utils.database as db
+import utils.auth_helper as auth
 
 
 sidebar.hide_sidebar()
@@ -31,7 +32,7 @@ options = [
     "Strongly Agree"
 ]
 
-user_id = st.session_state["user_id"]
+user_id = auth.require_user_id()
 
 
 # The questions are shown vertically and the answers are shown horizontally

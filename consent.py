@@ -18,12 +18,17 @@ sidebar.hide_sidebar()
 db.init_db()
 
 
-# If user_id doesn't exist in cookies, create it
-if "user_id" not in cookies:
+# If user_id doesn't exist in cookies or is empty/None, create it
+if not cookies.get("user_id"):
     cookies["user_id"] = str(uuid.uuid4())
     cookies.save()
 
 st.session_state["user_id"] = cookies["user_id"]
+
+# Double check that we have a valid ID now
+if not st.session_state.get("user_id"):
+    st.error("Failed to generate User ID. Please check your browser cookie settings.")
+    st.stop()
 
 # If user already completed, block (same browser shouldn't complete twice)
 if db.is_completed(st.session_state["user_id"]):

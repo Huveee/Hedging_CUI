@@ -3,6 +3,7 @@ import streamlit as st
 from data.questions_hct import questions_hct
 import utils.sidebar as sidebar
 import utils.database as db
+import utils.auth_helper as auth
 
 sidebar.hide_sidebar()
 db.init_db()
@@ -36,7 +37,7 @@ for question in questions_hct:
     )
     st.divider() #To add line between questions
 
-user_id = st.session_state["user_id"]
+user_id = auth.require_user_id()
 
 
 if st.button("Done",key="done_button2"):
