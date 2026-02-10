@@ -5,17 +5,17 @@ import utils.database as db
 import utils.auth_helper as auth
 from data.scenarios import DECISION_SCENARIO, DECISION_QUESTION
 
-
-import requests  # For Ollama API calls
+import requests  # For API calls
 import json
 
-OLLAMA_URL = "http://localhost:11434"
-OLLAMA_MODEL = "llama3.2:1b"
+API_URL = "https://chat-ai.academiccloud.de/v1/chat/completions"
+API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+MODEL_NAME = "llama-3.3-70b-instruct"  
 
 
 sidebar.hide_sidebar()
-db.init_db()
 user_id = auth.require_user_id()
+db.init_db()
 
 
 #State Initialization (To save the chat messages and final decision in case of rerunning the app)
@@ -81,24 +81,26 @@ def system_prompt_for_group(group: int) -> str:
     return "You are a helpful assistant."
 
 
+
 def send_message():
     text = st.session_state["user_input"].strip()
     if not text:
         return
 
-    # user mesajı
+    # save the user message
     st.session_state["chat_messages"].append(
         {"role": "user", "content": text}
     )
     st.session_state["user_input"] = ""
 
+    # System + old messages
     group = int(st.session_state.get("group", 0))
 
     messages = [
         {
             "role": "system",
-            "content": system_prompt_for_group(group) 
-        },
+            "content": system_prompt_for_group(group)
+        },    
         # {
         #     "role": "system",
         #     "content": f"SCENARIO CONTEXT:\n{DECISION_SCENARIO}"
@@ -109,33 +111,40 @@ def send_message():
         # }
     ]
 
+    # add the old messages
+    for msg in st.session_state["chat_messages"]:
+        messages.append(msg)
 
-    for m in st.session_state["chat_messages"]:
-        messages.append(
-            {"role": m["role"], "content": m["content"]}
-        )
-
+    # PAYLOAD
     payload = {
-        "model": OLLAMA_MODEL,
+        "model": MODEL_NAME,
         "messages": messages,
+        "temperature": 0.7,
         "stream": False
+    }
+
+    # HEADER
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json"
     }
 
     try:
         r = requests.post(
-            f"{OLLAMA_URL}/api/chat",
+            API_URL,
+            headers=headers,
             json=payload,
             timeout=60
         )
         r.raise_for_status()
         data = r.json()
 
-        assistant_reply = data["message"]["content"]
+        assistant_reply = data["choices"][0]["message"]["content"]
 
     except Exception as e:
-        assistant_reply = f"(Ollama error: {e})"
+        assistant_reply = f"(API error: {e})"
 
-    # assistant cevabı
+    # add the message of the assistant
     st.session_state["chat_messages"].append(
         {"role": "assistant", "content": assistant_reply}
     )

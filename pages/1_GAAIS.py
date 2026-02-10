@@ -10,6 +10,8 @@ import utils.auth_helper as auth
 sidebar.hide_sidebar()
 db.init_db()
 
+user_id = auth.require_user_id()
+
 # Random order of the questions at first 
 if "gaais_random" not in st.session_state:
     st.session_state["gaais_random"] = random.sample(questions, len(questions))
@@ -31,8 +33,6 @@ options = [
     "Agree",
     "Strongly Agree"
 ]
-
-user_id = auth.require_user_id()
 
 
 # The questions are shown vertically and the answers are shown horizontally

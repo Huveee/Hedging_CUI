@@ -8,6 +8,8 @@ import utils.auth_helper as auth
 sidebar.hide_sidebar()
 db.init_db()
 
+user_id = auth.require_user_id()
+
 st.title("Questionnaire") #title of the page
 st.write("")
 
@@ -37,7 +39,7 @@ for question in questions_hct:
     )
     st.divider() #To add line between questions
 
-user_id = auth.require_user_id()
+
 
 
 if st.button("Done",key="done_button2"):
