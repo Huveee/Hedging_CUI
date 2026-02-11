@@ -4,6 +4,7 @@ import utils.sidebar as sidebar
 import utils.database as db
 import utils.auth_helper as auth
 from data.scenarios import DECISION_SCENARIO, DECISION_QUESTION
+from components.chat_render import render_chat
 
 import requests  # For API calls
 import json
@@ -49,15 +50,6 @@ st.markdown(f"**{DECISION_QUESTION}**")
 
 st.subheader("Chat")
 st.write("Your group is: ", st.session_state["group"])
-chat_box=st.container()
-
-with chat_box:
-    for msg in st.session_state["chat_messages"]:
-        if msg["role"] == "user":
-            st.markdown(f"**You:** {msg['content']}")
-        else:
-            st.markdown(f"**Assistant:** {msg['content']}")
-
 
 
 # Assign system prompt for different groups
@@ -82,8 +74,8 @@ def system_prompt_for_group(group: int) -> str:
 
 
 
-def send_message():
-    text = st.session_state["user_input"].strip()
+def send_message(text: str):
+    text = text.strip()
     if not text:
         return
 
@@ -91,7 +83,6 @@ def send_message():
     st.session_state["chat_messages"].append(
         {"role": "user", "content": text}
     )
-    st.session_state["user_input"] = ""
 
     # System + old messages
     group = int(st.session_state.get("group", 0))
@@ -111,9 +102,8 @@ def send_message():
         # }
     ]
 
-    # add the old messages
-    for msg in st.session_state["chat_messages"]:
-        messages.append(msg)
+    # add the past messages
+    messages.extend(st.session_state["chat_messages"])
 
     # PAYLOAD
     payload = {
@@ -150,9 +140,47 @@ def send_message():
     )
 
 
+# --- Chat Window ---
+render_chat(st.session_state["chat_messages"])
 
-st.text_input("Type your message here:", key="user_input")
-st.button("Send", on_click=send_message)
+# adding space between chat box and input
+st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+
+if "draft" not in st.session_state:
+    st.session_state["draft"] = ""
+if "input_error" not in st.session_state:
+    st.session_state["input_error"] = False
+
+
+def handle_send():
+    clean = (st.session_state.get("draft") or "").strip()
+    if clean == "":
+        st.session_state["input_error"] = True
+        return
+
+    st.session_state["input_error"] = False
+    st.session_state["draft"] = ""
+    send_message(clean)
+    st.rerun()
+
+
+col1, col2 = st.columns([6, 1])
+
+with col1:
+    st.text_input(
+        label="Message",
+        key="draft",
+        label_visibility="collapsed",
+        placeholder="Write your message…",
+    )
+
+with col2:
+    st.button("Send", type="primary", on_click=handle_send)
+
+# Dont let user to send empty message
+if st.session_state["input_error"]:
+    st.error("You cannot send empty message. Please write something.")
+
 
 st.subheader("Final decision")
 
