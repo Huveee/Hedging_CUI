@@ -36,6 +36,9 @@ if "final_decision" not in st.session_state:
 if "decision_submitted" not in st.session_state:
     st.session_state["decision_submitted"] = False
 
+if "waiting_for_response" not in st.session_state:
+    st.session_state["waiting_for_response"] = False
+
 st.title("Decision Task")
 st.write("")
 
@@ -74,16 +77,7 @@ def system_prompt_for_group(group: int) -> str:
 
 
 
-def send_message(text: str):
-    text = text.strip()
-    if not text:
-        return
-
-    # save the user message
-    st.session_state["chat_messages"].append(
-        {"role": "user", "content": text}
-    )
-
+def get_ai_response() -> str:
     # System + old messages
     group = int(st.session_state.get("group", 0))
 
@@ -92,14 +86,6 @@ def send_message(text: str):
             "role": "system",
             "content": system_prompt_for_group(group)
         },    
-        # {
-        #     "role": "system",
-        #     "content": f"SCENARIO CONTEXT:\n{DECISION_SCENARIO}"
-        # },
-        # {
-        #     "role": "system",
-        #     "content": f"DECISION QUESTION:\n{DECISION_QUESTION}"
-        # }
     ]
 
     # add the past messages
@@ -134,17 +120,34 @@ def send_message(text: str):
     except Exception as e:
         assistant_reply = f"(API error: {e})"
 
-    # add the message of the assistant
-    st.session_state["chat_messages"].append(
-        {"role": "assistant", "content": assistant_reply}
-    )
+    return assistant_reply
+
 
 chat_slot = st.container()
 with chat_slot:
     # Chat Window
-    render_chat(st.session_state["chat_messages"])
+    loading = st.session_state.get("waiting_for_response", False)
+    
+    # Render existing messages + loading indicator if needed
+    render_chat(st.session_state["chat_messages"], loading=loading)
 
-# adding space between chat box and input
+    # If we are in loading state, perform the API call now
+    if loading:
+        response = get_ai_response()
+        
+        # Add assistant response
+        st.session_state["chat_messages"].append(
+            {"role": "assistant", "content": response}
+        )
+        
+        # Reset loading state
+        st.session_state["waiting_for_response"] = False
+        
+        # Rerun to show the new message and remove loading indicator
+        st.rerun()
+
+
+# adding space between chat box and input area
 st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
 
 if "draft" not in st.session_state:
@@ -161,7 +164,11 @@ def handle_send():
 
     st.session_state["input_error"] = False
     st.session_state["draft"] = ""
-    send_message(clean)
+    
+    # Only append user message and set waiting flag
+    st.session_state["chat_messages"].append({"role": "user", "content": clean})
+    st.session_state["waiting_for_response"] = True
+    # The script will rerun after this callback, picking up the waiting state
 
 
 col1, col2 = st.columns([6, 1])
