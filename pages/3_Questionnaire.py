@@ -30,6 +30,8 @@ correctness = st.radio(
     key="chatbot_correctness"
 )
 
+st.divider() #To add line between questions
+
 for question in questions_hct:
     st.radio(
         question["text"], #show the question text,
