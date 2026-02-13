@@ -5,7 +5,9 @@ def render_chat(messages):
     st.markdown("""
     <style>
     .chat-wrap {
-      max-height: 420px;
+      height: 50vh;
+      min-height: 300px;
+      max-height: 700px;
       overflow-y: auto;
       padding: 12px;
       border: 1px solid rgba(255,255,255,0.15);

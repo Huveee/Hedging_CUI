@@ -20,19 +20,19 @@ db.init_db()
 
 
 #State Initialization (To save the chat messages and final decision in case of rerunning the app)
-# 1) Chat message history
+# Chat message history
 if "chat_messages" not in st.session_state:
     st.session_state["chat_messages"] = []
 
-# 2) Chat start time (timestamp)
+# Chat start time (timestamp)
 if "chat_started_at" not in st.session_state:
     st.session_state["chat_started_at"] = time.time()
 
-# 3) Final decision (initially empty)
+# Final decision
 if "final_decision" not in st.session_state:
     st.session_state["final_decision"] = None
 
-# 4) Decision submitted?
+# check if the decision submitted
 if "decision_submitted" not in st.session_state:
     st.session_state["decision_submitted"] = False
 
@@ -139,9 +139,10 @@ def send_message(text: str):
         {"role": "assistant", "content": assistant_reply}
     )
 
-
-# --- Chat Window ---
-render_chat(st.session_state["chat_messages"])
+chat_slot = st.container()
+with chat_slot:
+    # Chat Window
+    render_chat(st.session_state["chat_messages"])
 
 # adding space between chat box and input
 st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
@@ -161,7 +162,6 @@ def handle_send():
     st.session_state["input_error"] = False
     st.session_state["draft"] = ""
     send_message(clean)
-    st.rerun()
 
 
 col1, col2 = st.columns([6, 1])
@@ -192,31 +192,31 @@ decision = st.radio(
 )
 
 if st.button("Next"):
-    # 1) Is there any user message?
+    # Check if there any user message
     has_user_message = any(msg["role"] == "user" for msg in st.session_state["chat_messages"])
 
     if not has_user_message:
         st.error("Please ask at least one question in the chat before continuing.")
         st.stop()
 
-    # 2) Final decision done?
+    # Check if the final decision selected
     if st.session_state.get("final_decision") is None:
         st.error("Please make your final decision before continuing.")
         st.stop()
 
-    # DB: make sure participant row exists 
+    # make sure participant row exists in db
     db.create_participant_if_missing(
         user_id=user_id,
         group_no=int(st.session_state["group"])
     )
 
-    # DB: save decision
+    # save decision to db
     db.set_decision(
         user_id=user_id,
         decision=st.session_state["final_decision"]
     )
 
-    # 4) If everything is done, switch to the next page
+    # If everything is done, switch to the next page
     st.switch_page("pages/3_Questionnaire.py")
 
 

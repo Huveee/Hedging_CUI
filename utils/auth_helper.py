@@ -10,7 +10,7 @@ def require_user_id() -> str:
     user_id = st.session_state.get("user_id")
     
     if not user_id:
-        st.warning("No user ID found, redirecting to consent page...")
+        st.warning("Redirecting to consent page...")
         time.sleep(1) # Give the user a moment to see the message
         st.switch_page("Consent.py")
         st.stop()
