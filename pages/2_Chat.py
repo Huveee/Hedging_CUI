@@ -9,8 +9,17 @@ from components.chat_render import render_chat
 import requests  # For API calls
 import json
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 API_URL = "https://chat-ai.academiccloud.de/v1/chat/completions"
-API_KEY = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+API_KEY = os.getenv("API_KEY") 
+if not API_KEY:
+    st.error("API_KEY not found. Please set it in the .env file.")
+    st.stop()
+    
 MODEL_NAME = "llama-3.3-70b-instruct"  
 
 
