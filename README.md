@@ -12,7 +12,7 @@ The application guides participants through a structured experiment flow:
 
 ## Prerequisites
 
--   Python 3.8+
+-   Python 3.14+
 -   Streamlit
 
 ## Installation
@@ -50,6 +50,7 @@ This will launch the application in your default web browser.
     -   `1_GAAIS.py`: Pre-experiment questionnaire.
     -   `2_Chat.py`: The main chat interface and decision task.
     -   `3_Questionnaire.py`: Post-experiment questionnaire.
+    -   `4_Thanks.py`: Final thank you page.
 -   `utils/`: Helper modules for database management, authentication, and UI elements.
 -   `components/`: Reusable UI components (e.g., chat message rendering).
 -   `data/`: Contains static data such as survey questions and scenarios.
