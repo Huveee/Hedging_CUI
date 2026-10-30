@@ -27,10 +27,17 @@ pip install -r requirements.txt
 ## Configuration
 
 1.  Create a `.env` file in the root directory.
-2.  Add your API key to the `.env` file:
+2.  Add your API key and a cookie encryption password to the `.env` file:
 
 ```env
 API_KEY=your_api_key_here
+COOKIE_PASSWORD=your_long_random_password_here
+```
+
+The app will not start without `COOKIE_PASSWORD`. To generate a value, run:
+
+```bash
+python -c "import secrets; print(secrets.token_urlsafe(48))"
 ```
 
 ## Running the Application

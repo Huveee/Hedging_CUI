@@ -1,12 +1,21 @@
 import streamlit as st
 import utils.sidebar as sidebar
 import uuid
+import os
 import utils.database as db
+from dotenv import load_dotenv
 from streamlit_cookies_manager import EncryptedCookieManager
+
+load_dotenv()
+
+COOKIE_PASSWORD = os.getenv("COOKIE_PASSWORD")
+if not COOKIE_PASSWORD:
+    st.error("COOKIE_PASSWORD not found. Please set it in the .env file.")
+    st.stop()
 
 cookies = EncryptedCookieManager(
     prefix="study_",
-    password="XXXXXXXXXXXXXXXXXXXX"
+    password=COOKIE_PASSWORD
 )
 
 if not cookies.ready():
